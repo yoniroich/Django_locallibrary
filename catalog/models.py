@@ -35,6 +35,8 @@ class Book(models.Model):
     author = models.ForeignKey('Author', on_delete=models.RESTRICT, null=True)
     # Foreign Key used because book can only have one author, but authors can have multiple books.
     # Author as a string rather than object because it hasn't been declared yet in file.
+    language = models.ForeignKey('Language', on_delete=models.SET_NULL, null=True)
+
 
     summary = models.TextField(
         max_length=1000, help_text="Enter a brief description of the book")
@@ -91,4 +93,14 @@ class BookInstance(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.id} ({self.book.title})'
+    
+class Language(models.Model):
+    """Model representing a Language (e.g. English, French, Japanese, etc.)"""
+    name = models.CharField(
+        max_length=200,
+        help_text="Enter the book's natural language (e.g. English, French, Japanese etc.)"
+    )
 
+    def __str__(self):
+        """String for representing the Model object."""
+        return self.name
