@@ -20,7 +20,7 @@ class BookInline(admin.TabularInline):
 # admin.site.register(Book)
 @admin.register(Book)
 class BookAdmin(ImportExportModelAdmin):
-    list_display=('title', 'author', 'display_genre')
+    list_display=('id','title', 'author', 'display_genre')
     list_filter=('author',)
     inlines= [BooksInstanceInline]
 
@@ -31,26 +31,29 @@ class BookAdmin(ImportExportModelAdmin):
 # admin.site.register(Author)
 @admin.register(Author)
 class AuthorAdmin(ImportExportModelAdmin):
-    list_display=('last_name', 'first_name', 'date_of_birth', 'date_of_death')
+    list_display=('id', 'last_name', 'first_name', 'date_of_birth', 'date_of_death')
     fields=['last_name', 'first_name', ('date_of_birth', 'date_of_death')]
     inlines= [BookInline]
 
 admin.site.register(Genre)
 
-# admin.site.register(BookInstance)
 @admin.register(BookInstance)
 class BookInstanceAdmin(ImportExportModelAdmin):
-    list_display=('book', 'status')
+    list_display = ('book', 'status')
     list_filter = ('status', 'due_back')
-    fieldsets=(
-        (None,{
-         'fields':('book','imprint','id')
-         }),
-        
-        ('זמינות',{
-        'fields':('status', 'due_back')
-        }),
+    fieldsets = (
+        (None, {'fields': ('book', 'imprint', 'id')}),
+        ('זמינות', {'fields': ('status', 'due_back')}),
     )
+
+    def process_import(self, request, *args, **kwargs):
+        """עוקף באג של import_export כשאין request.user"""
+        try:
+            return super().process_import(request, *args, **kwargs)
+        except TypeError:
+            import traceback
+            traceback.print_exc()
+            return super(ImportExportModelAdmin, self).process_import(request, *args, **kwargs)
 
 admin.site.register(Language)
 
