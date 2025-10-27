@@ -28,7 +28,7 @@ class BookAdmin(ImportExportModelAdmin):
         return ','.join(genre.name for genre in obj.genre.all()[:3])
         disply_genre=short.description = 'genre'
 
-# admin.site.register(Author)
+  # admin.site.register(Author)
 @admin.register(Author)
 class AuthorAdmin(ImportExportModelAdmin):
     list_display=('id', 'last_name', 'first_name', 'date_of_birth', 'date_of_death')
