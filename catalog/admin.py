@@ -39,11 +39,11 @@ admin.site.register(Genre)
 
 @admin.register(BookInstance)
 class BookInstanceAdmin(ImportExportModelAdmin):
-    list_display = ('book', 'status')
+    list_display = ('book', 'status', 'due_back', 'borrower')
     list_filter = ('status', 'due_back')
     fieldsets = (
         (None, {'fields': ('book', 'imprint', 'id')}),
-        ('זמינות', {'fields': ('status', 'due_back')}),
+        ('זמינות', {'fields': ('status', 'borrower', 'due_back')}),
     )
 
     def process_import(self, request, *args, **kwargs):

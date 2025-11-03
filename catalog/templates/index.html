@@ -15,5 +15,24 @@
     <li><strong>Authors:</strong> {{ num_authors }}</li>
     <li><strong>Genres_Drama:</strong> {{ num_authors }}</li>
     <li><strong>Genres_action:</strong> {{ num_genres_action }}</li>
+    <li><strong>num_visits:</strong> {{ num_visits }}</li>
   </ul>
+  <form method="get" class="search-form mb-3">
+    <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Search for a book..." class="form-control" style="max-width:300px; display:inline-block;">
+    <button type="submit" class="btn btn-danger">Search</button>
+  </form>
+
+  <!-- 🔹 תוצאות חיפוש -->
+  {% if query %}
+    <h4>Search results for "{{ query }}":</h4>
+    {% if books %}
+      <ul>
+        {% for book in books %}
+          <li><a href="{{ book.get_absolute_url }}">{{ book.title }}</a> — {{ book.author }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No books found.</p>
+    {% endif %}
+  {% endif %}
 {% endblock %}
