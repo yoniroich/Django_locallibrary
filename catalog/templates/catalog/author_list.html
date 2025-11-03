@@ -1,0 +1,26 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Author List</h1>
+  {% if author_list %}
+     <table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse;">
+      <tr>
+        <th>Last_Name</th>
+        <th>First_Name</th>
+     
+      </tr>
+
+    <tr>
+      {% for author in author_list %}
+           <tr>
+        <td><a href="{{ author.get_absolute_url }}">{{ author.last_name }}</a></td>
+        <td>{{ author.first_name }}</td>
+       
+      </tr>
+      {% endfor %}
+    </table>
+
+  {% else %}
+    <p>There are no authors in the library.</p>
+  {% endif %}
+{% endblock %}
