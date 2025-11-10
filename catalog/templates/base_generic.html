@@ -44,10 +44,11 @@
           <div class="sidebar">
             <h4 class="sidebar-title">Library Menu</h4>
 
+            <a href="{% url 'register' %}" class="sidebar-btn">Register</a>
             <a href="{% url 'index' %}" class="sidebar-btn">Home</a>
             <a href="{% url 'books' %}" class="sidebar-btn">All Books</a>
             <a href="{% url 'authors' %}" class="sidebar-btn">All Authors</a>
-            <a href="{% url 'register' %}" class="sidebar-btn">Register</a>
+            
 
             {% if user.is_authenticated %}
               <a href="{% url 'my-borrowed' %}" class="sidebar-btn">My Borrowed</a>
@@ -58,6 +59,19 @@
             {% if perms.catalog.can_mark_returned %}
               <a href="{% url 'book-borrowed' %}" class="sidebar-btn librarian-btn">All Borrowed Books</a>
             {% endif %}
+
+            {% if user.is_staff %}
+              <hr>
+              <ul class="sidebar-nav">
+                <li><strong>Staff</strong></li>
+                {% if perms.catalog.add_author %}
+                  <li><a href="{% url 'author-create' %}">Create author</a></li>
+                  <li><a href="{% url 'book-create' %}">Create book</a></li>
+
+                {% endif %}
+              </ul>
+            {% endif %}
+
           </div>
           {% endblock %}
         </div>
