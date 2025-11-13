@@ -6,7 +6,10 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, User
+from django.contrib.contenttypes.models import ContentType
+
+
 
 from catalog.models import Author, Book, BookInstance, Genre, Language
 
@@ -234,3 +237,63 @@ class RenewBookInstancesViewTest(TestCase):
                 {'renewal_date': invalid_date})
         self.assertFormError(response.context['form'], 'renewal_date',
                              'Invalid date - renewal more than 4 weeks ahead')
+        
+
+# ============================================================
+# 3️⃣ בדיקות ליצירת סופר חדש (create auther)
+# ============================================================
+class AuthorCreateViewTest(TestCase):
+    """Test case for the AuthorCreate view (Created as Challenge)."""
+
+    def setUp(self):
+        # Create a user
+        test_user1 = User.objects.create_user(
+            username='test_user1', password='some_password1')
+        test_user2 = User.objects.create_user(
+            username='test_user2', password='some_password2')
+
+        content_typeAuthor = ContentType.objects.get_for_model(Author)
+        permAddAuthor = Permission.objects.get(
+            codename="add_author",
+            content_type=content_typeAuthor,
+        )
+
+        test_user1.user_permissions.add(permAddAuthor)
+        test_user1.save()
+        test_user2.save()
+
+    def test_forbidden_if_no_permission(self):
+        """מחובר בלי הרשאה → 403"""
+        self.client.login(username='test_user2', password='some_password2')
+        response = self.client.get(reverse('author-create'))
+        self.assertEqual(response.status_code, 403)
+
+    def test_access_with_permission(self):
+        """מחובר עם הרשאה → גישה מותרת"""
+        self.client.login(username='test_user1', password='some_password1')
+        response = self.client.get(reverse('author-create'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_logged_in_correct_template(self):
+        """בודקת שמשתמש מחובר רואה את הדף הנכון"""
+        self.client.login(username='test_user1', password='some_password1')
+        response = self.client.get(reverse('author-create'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'catalog/author_form.html')
+
+    def test_form_initial_date_of_death_is_11_11_2023(self):
+        """הטופס נפתח עם תאריך החל מ11.11.23"""
+        self.client.login(username='test_user1', password='some_password1')
+        response = self.client.get(reverse('author-create'))
+        self.assertEqual(response.context['form'].initial['date_of_death'], '11/11/2023')
+
+
+    def test_valid_post_redirects(self):
+        """שליחה תקינה של טופס → מפנה לעמוד author_detail"""
+        self.client.login(username='test_user1', password='some_password1')
+        response = self.client.post(resverse('author-create'),
+        {'first_name': 'John', 'last_name': 'Doe', 'date_of_birth': '2000-01-01'})
+        self.assertRedirects(response, reverse('author-detail', args=[1]))
+
+
+
