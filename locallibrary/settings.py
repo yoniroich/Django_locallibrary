@@ -33,7 +33,7 @@ DEBUG =os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 ALLOWED_HOSTS = ['.railway.app', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = ['https://*.railway.app']
-SECURE_SSL_REDIRECT = True
+
 
 
 
